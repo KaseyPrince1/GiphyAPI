@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>GiphyAPI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+</head>
+
+<body style = 'background-color: hsla(213, 54%, 79%, 0.678)'>
+  <br></br>
+  <div class='jumbotron jumbotron-fluid'>
+  <h1 class = 'display-4'>Giphy Gifs</h1> </div>
+  <form  id='gif-form'>
+      <input type='text' id='gif-input'>
+      <label for='gif-input'><input class= 'btn btn-secondary btn-sm' id='add-gif' type='submit' value='Search'></label>
+  </form>
+  <div class = "btn-group-toggle" data-toggle="buttons">
+  <button type="button" class="btn-secondary btn-lg btn-fluid" id="gif-button"></button>
+  </div>
+  <div class='images-view'></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      
+    let gifArray =[
+        'Chipotle',
+        'coffee',
+        'starbucks',
+        'SOS',
+        'spooky',
+        'dogs',
+        'world',
+        'nature',
+        'NASA',
+        'science',
+        'music'
+    ];
+      function displayGif(){
+        let gif = $(this).attr("data-gif");
+        let queryURL = "http://api.giphy.com/v1/gifs/search?q=" + gif + "&api_key=MJIJuhjTh5lC4IjAntrE8FiWuyoUsgMv";
+     
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+   
+       }).then(function(response){
+         let gifDiv = $("<div class='gif'>");
+
+         let gifURL = response.data;
+         console.log(response);
+
+         let image = $("<img>").attr("src", gifURL);
+
+         gifDiv.append(image);
+
+         $('#images-view').prepend(gifDiv);
+       });
+
+      }
+
+      function renderButtons(){
+        $('#gif-button').empty();
+
+        for (let i = 0; i < gifArray.length; i++){
+          let it = $('<button>');
+          it.addClass('gif-btn');
+          it.attr('data-gif', gifArray[i]);
+          it.text(gifArray[i]);
+          $('#gif-button').append(it);
+        }
+      }
+        $('#add-gif').on('click',function(event){
+          event.preventDefault();
+          let gif = $('#gif-input').val().trim();
+          gifArray.push(gif);
+          renderButtons();
+        })
+        $(document).on('click', '.gif-btn', displayGif);
+
+        renderButtons();
+  
+   
+        </script>
+    </body>
+  </div>
+</html>
