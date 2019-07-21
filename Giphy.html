@@ -17,6 +17,7 @@
   </form>
   <div class = "btn-group-toggle" data-toggle="buttons">
   <button type="button" class="btn-secondary btn-lg btn-fluid" id="gif-button"></button>
+
   <div class = "container">
     <div class = 'images-view'> 
     </div>
@@ -24,6 +25,7 @@
 </div>
 </div>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
     <script type="text/javascript">
       
     let gifArray =[
@@ -41,13 +43,16 @@
     ];
       function displayGif(){
         let gif = $(this).attr("data-gif");
+
         let queryURL = "https://api.giphy.com/v1/gifs/search?q=" + gif + "&api_key=MJIJuhjTh5lC4IjAntrE8FiWuyoUsgMv";
       
+
       $.ajax({
           url: queryURL,
           method: "GET"
    
        }).then(function(response){
+
          let gifURL = response.data;
          console.log(response.data);
          let gifURLs = [];
@@ -61,7 +66,6 @@
         }; 
             
       });
-
       }
 
       function renderButtons(){
