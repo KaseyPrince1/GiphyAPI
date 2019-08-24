@@ -7,90 +7,107 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
 </head>
 
-<body style = 'background-color: hsla(213, 54%, 79%, 0.678)'>
+<body style='background-color: hsla(213, 54%, 79%, 0.678)'>
   <br></br>
   <div class='jumbotron jumbotron-fluid'>
-  <h1 class = 'display-4'>Giphy Gifs</h1> 
-  <form  id='gif-form'>
+    <h1 class='display-4'>Giphy Gifs</h1>
+    <form id='gif-form'>
       <input type='text' id='gif-input'>
-      <label for='gif-input'><input class= 'btn btn-secondary btn-sm' id='add-gif' type='submit' value='Search'></label>
-  </form>
-  <div class = "btn-group-toggle" data-toggle="buttons">
-  <button type="button" class="btn-secondary btn-lg btn-fluid" id="gif-button"></button>
+      <label for='gif-input'><input class='btn btn-secondary btn-sm' id='add-gif' type='submit' value='Search'></label>
+    </form>
+    <div class="btn-group-toggle" data-toggle="buttons">
+      <button type="button" class="btn-secondary btn-lg btn-fluid" id="gif-button"></button>
 
-  <div class = "container">
-    <div class = 'images-view'> 
+      <div class="container">
+        <div id='images-view'>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-</div>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-    <script type="text/javascript">
-      
-    let gifArray =[
-        'Chipotle',
-        'coffee',
-        'starbucks',
-        'SOS',
-        'spooky',
-        'dogs',
-        'world',
-        'nature',
-        'NASA',
-        'science',
-        'music'
+  <script type="text/javascript">
+
+    let gifArray = [
+      'Chipotle',
+      'coffee',
+      'starbucks',
+      'SOS',
+      'spooky',
+      'dogs',
+      'world',
+      'nature',
+      'NASA',
+      'science',
+      'music'
     ];
-      function displayGif(){
-        let gif = $(this).attr("data-gif");
 
-        let queryURL = "https://api.giphy.com/v1/gifs/search?q=" + gif + "&api_key=MJIJuhjTh5lC4IjAntrE8FiWuyoUsgMv";
+    function displayGif() {
+      let gif = $(this).attr("data-gif");
+      let queryURL = "https://api.giphy.com/v1/gifs/search?q=" + gif + "&api_key=MJIJuhjTh5lC4IjAntrE8FiWuyoUsgMv&limit=10";
       
+      $('#images-view').html("");
 
       $.ajax({
-          url: queryURL,
-          method: "GET"
-   
-       }).then(function(response){
+        url: queryURL,
+        method: "GET"
+      }).then(function (response) {
+        for (let i = 0; i < response.data.length; i++) {
+          const currentGifImages = response.data[i].images;
 
-         let gifURL = response.data;
-         console.log(response.data);
-         let gifURLs = [];
-        // let image = $("<img>").attr("src", gifURLs);
-        for(let i = 0; i < 10; i++) {
-        // gifURLs.push(response.data[i].url);
-        const div = $('div');
-        const image = (`<div><img src="${response.data[i].images.original.url}" alt="Giphy View"></div>`);
-          div.append(image);
-        //  $('images-view').append(image);
-        }; 
-            
+          const gifWrapper = $('<div>');
+          const gifHolder = $(`<img class='gifImage' src=${currentGifImages.original.url} alt="Giphy View" />`)
+          gifHolder.attr('data-giphy-animate', currentGifImages.original.url);
+          gifHolder.attr('data-giphy-still', currentGifImages.original_still.url);
+          gifHolder.attr('data-is-giphy-active', true);
+          gifWrapper.append(gifHolder);
+
+           $('#images-view').append(gifWrapper);
+        };
       });
+    }
+
+    function renderButtons() {
+      $('#gif-button').empty();
+
+      for (let i = 0; i < gifArray.length; i++) {
+        let it = $('<button>');
+        it.addClass('gif-btn');
+        it.attr('data-gif', gifArray[i]);
+        it.text(gifArray[i]);
+        $('#gif-button').append(it);
       }
+    }
 
-      function renderButtons(){
-        $('#gif-button').empty();
+    function toggleGif() {
+      const isGiphyCurrentlyAnimated = $(this).data("isGiphyActive");
 
-        for (let i = 0; i < gifArray.length; i++){
-          let it = $('<button>');
-          it.addClass('gif-btn');
-          it.attr('data-gif', gifArray[i]);
-          it.text(gifArray[i]);
-          $('#gif-button').append(it);
-        }
+      // if image is currently animated
+      if (isGiphyCurrentlyAnimated) {
+        // switch to still
+        $(this).attr('src', $(this).data("giphyStill"));
+        $(this).data('isGiphyActive', false);
+      } else {
+        // switch to animate
+        $(this).attr('src', $(this).data("giphyAnimate"));
+        $(this).data('isGiphyActive', true);
       }
-        $('#add-gif').on('click',function(event){
-          event.preventDefault();
-          let gif = $('#gif-input').val().trim();
-          gifArray.push(gif);
-          renderButtons();
-        })
-        $(document).on('click', '.gif-btn', displayGif);
+    }
 
-        renderButtons();
-  
-   
-        </script>
-    </body>
-  </div>
+
+    $('#add-gif').on('click', function (event) {
+      event.preventDefault();
+      let gif = $('#gif-input').val().trim();
+      gifArray.push(gif);
+      renderButtons();
+    })
+
+    $(document).on('click', '.gif-btn', displayGif);
+    $(document).on('click', '.gifImage', toggleGif);
+
+    renderButtons();
+  </script>
+</body>
+</div>
+
 </html>
